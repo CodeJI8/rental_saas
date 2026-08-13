@@ -1,9 +1,9 @@
 const express = require("express");
-const { controller } = require("../controllers/PropertiesController");
+const { properties } = require("../controllers/PropertiesController");
 
 const router = express.Router();
 
-router.post("/create", controller);
+router.post("/create", properties);
 
 
 module.exports = router;

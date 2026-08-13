@@ -1,7 +1,7 @@
 const prisma = require("../config/prisma");
 
 
-const properties= (req, res) => {
+const properties = async  (req, res)  => {
 
     try {
          const {name ,   address,  total_units} = req.body;
@@ -50,3 +50,5 @@ const properties= (req, res) => {
 
 
 }
+
+module.exports = { properties };
