@@ -13,6 +13,7 @@ model Organization {
   subscriptionPlan String   @default("free")
   createdAt        DateTime @default(now())
   users            User[]
+   properties       Property[]
 }
 
 model User {
@@ -24,4 +25,16 @@ model User {
   passwordHash String
   role         String       @default("manager")
   createdAt    DateTime     @default(now())
+}
+
+
+
+model Property {
+  id          String       @id @default(uuid())
+  orgId       String
+  organization Organization @relation(fields: [orgId], references: [id])
+  name        String
+  address     String
+  totalUnits  Int
+  createdAt   DateTime     @default(now())
 }
