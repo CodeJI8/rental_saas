@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Register.css';
+import { register } from "../api/auth.js";
+import {toast } from 'react-toastify';
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
+const [formData, setFormData] = useState({
+  fullName: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  orgName: '',
+});
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
 
   const navigate = useNavigate();
 
@@ -24,247 +24,161 @@ const Register = () => {
       [name]: value,
     }));
 
-    if (error) {
-      setError('');
-    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
 
-    if (
-      !formData.fullName ||
-      !formData.email ||
-      !formData.password ||
-      !formData.confirmPassword
-    ) {
-      setError('All fields are required.');
-      setLoading(false);
-      return;
-    }
+      console.log("CREATE ACCOUNT CLICKED");
+  console.log("FORM DATA:", formData);
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long.');
-      setLoading(false);
-      return;
-    }
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match.');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fullName: formData.fullName,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed.');
-      }
-
-      if (data.success) {
-        setSuccess(true);
-
-        setFormData({
-          fullName: '',
-          email: '',
-          password: '',
-          confirmPassword: '',
-        });
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (success) {
-    return (
-      <div className="register-page">
-        <div className="success-card">
-
-          <div className="success-icon">
-            ✓
-          </div>
-
-          <h2>Registration Successful!</h2>
-
-          <p>
-            Your account has been created successfully.
-            You can now login to your account.
-          </p>
-
-          <button
-            className="success-button"
-            onClick={() => navigate('/login')}
-          >
-            Proceed to Login
-          </button>
-
-        </div>
-      </div>
-    );
+  if (formData.password.length < 5) {
+    toast.error('Password must be at least 4 characters long');
+    return;
   }
 
-  return (
-    <div className="register-page">
+  if (formData.password !== formData.confirmPassword) {
+    toast.error('Passwords do not match');
+    return;
+  }
+    try {
 
-      <div className="register-card">
+      await  register(formData);
+        toast.success("Registration Successful");
 
-        {/* Header */}
-        <div className="register-header">
 
-          <div className="logo">
-            RS
-          </div>
+      navigate("/login");
+      
+    } 
+    
+    catch (err) {
+    const message =
+        err.response?.data?.message || "Registration failed";
 
-          <h1>Create your account</h1>
+        toast.error(message);
+}
 
-          <p>
-            Get started with Rental SaaS
-          </p>
 
+  };
+  
+
+return (
+  <div className="register-page">
+
+    <div className="register-card">
+
+      <div className="register-header">
+        <div className="logo">RS</div>
+
+        <h1>Create your account</h1>
+
+        <p>Set up your Rental SaaS workspace</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="register-form">
+
+        <div className="form-group">
+          <label htmlFor="fullName">Full Name</label>
+
+          <input
+            type="text"
+            id="fullName"
+            name="fullName"
+            value={formData.fullName}
+            onChange={handleChange}
+            placeholder="John Doe"
+            required
+          />
         </div>
 
-        {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="register-form"
-        >
+        <div className="form-group">
+          <label htmlFor="orgName">Organization Name</label>
 
-          {/* Full Name */}
-          <div className="form-group">
+          <input
+            type="text"
+            id="orgName"
+            name="orgName"
+            value={formData.orgName}
+            onChange={handleChange}
+            placeholder="Your property management company"
+            required
+          />
 
-            <label htmlFor="fullName">
-              Full Name
-            </label>
-
-            <input
-              type="text"
-              id="fullName"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              placeholder="Enter your full name"
-              required
-            />
-
-          </div>
-
-          {/* Email */}
-          <div className="form-group">
-
-            <label htmlFor="email">
-              Email Address
-            </label>
-
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="you@example.com"
-              required
-            />
-
-          </div>
-
-          {/* Password */}
-          <div className="form-group">
-
-            <label htmlFor="password">
-              Password
-            </label>
-
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              required
-            />
-
-            <span className="input-hint">
-              Must be at least 6 characters
-            </span>
-
-          </div>
-
-          {/* Confirm Password */}
-          <div className="form-group">
-
-            <label htmlFor="confirmPassword">
-              Confirm Password
-            </label>
-
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirm your password"
-              required
-            />
-
-          </div>
-
-          {/* Error */}
-          {error && (
-            <div className="error-message">
-              {error}
-            </div>
-          )}
-
-          {/* Button */}
-          <button
-            type="submit"
-            className="register-button"
-            disabled={loading}
-          >
-            {loading ? 'Creating account...' : 'Create Account'}
-          </button>
-
-        </form>
-
-        {/* Login */}
-        <div className="login-link">
-
-          <span>
-            Already have an account?
+          <span className="input-hint">
+            This will be your Rental SaaS workspace
           </span>
-
-          <button
-            type="button"
-            onClick={() => navigate('/login')}
-          >
-            Login
-          </button>
-
         </div>
 
+        <div className="form-group">
+          <label htmlFor="email">Email Address</label>
+
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="you@example.com"
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
+
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="Create a password"
+            required
+          />
+
+          <span className="input-hint">
+            At least 6 characters
+          </span>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="confirmPassword">Confirm Password</label>
+
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            placeholder="Re-enter your password"
+            required
+          />
+        </div>
+
+    <button
+  type="submit"
+  className="register-button"
+>
+  Create Account
+</button>
+      </form>
+
+      <div className="login-link">
+        <span>Already have an account?</span>
+
+        <button
+          type="button"
+          onClick={() => navigate('/login')}
+        >
+          Login
+        </button>
       </div>
 
     </div>
-  );
+
+  </div>
+);
 };
 
 export default Register;
