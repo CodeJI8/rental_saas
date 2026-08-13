@@ -1,23 +1,22 @@
 const prisma = require("../config/prisma");
 
-
-const properties = async  (req, res)  => {
-
+const properties = async (req, res) => {
     try {
-         const {name ,   address,  total_units} = req.body;
-            if (!name || !address || !totalUnits || !orgId) {
+        const { name, address, totalUnits, orgId } = req.body;
+
+        if (!name || !address || !totalUnits || !orgId) {
             return res.status(400).json({
                 success: false,
                 message: "name, address, totalUnits and orgId are required"
             });
-        }   //if er bracket
+        }
 
         const property = await prisma.property.create({
-            data:{
-                   name,
+            data: {
+                name,
                 address,
                 totalUnits: Number(totalUnits),
-                orgId:user.orgId
+                orgId: orgId
             }
         });
 
@@ -27,28 +26,15 @@ const properties = async  (req, res)  => {
             property
         });
 
-
-
-
-
-
-        
-    }catch (error) {
-        console.error(error);
+    } catch (error) {
+        console.error("PROPERTY ERROR:", error);
 
         return res.status(500).json({
             success: false,
-            message: "Failed to create property"
+            message: "Failed to create property",
+            error: error.message
         });
-
     }
-
-
-
-
-
-
-
-}
+};
 
 module.exports = { properties };
