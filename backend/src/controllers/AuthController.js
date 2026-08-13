@@ -2,19 +2,21 @@ const prisma = require("../config/prisma");
 
 const register = async (req, res) => {
   try {
-    const { name, password, email, orgName  } = req.body;
-       const organization = await prisma.organization.create({
-            data: {
-                name: orgName
-            }
-        });
+    const { name, password, email, orgName } = req.body;
+
+        console.log("REGISTER BODY:", req.body);
+    const organization = await prisma.organization.create({
+      data: {
+        name: orgName,
+      },
+    });
 
     await prisma.user.create({
       data: {
         name,
         email,
         passwordHash: password,
-         orgId: organization.id
+        orgId: organization.id,
       },
     });
 
@@ -31,36 +33,30 @@ const register = async (req, res) => {
   }
 };
 
-
-
-
-
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     const user = await prisma.user.findUnique({
       where: {
-        email
-      }
+        email,
+      },
     });
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password"
+        message: "Invalid email or password",
       });
     }
 
-  
     if (password !== user.passwordHash) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password"
+        message: "Invalid email or password",
       });
     }
 
-  
     res.status(200).json({
       success: true,
       message: "Login successful",
@@ -68,23 +64,20 @@ const login = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        orgId: user.orgId
-      }
+        orgId: user.orgId,
+      },
     });
-
   } catch (error) {
     console.error(error);
 
     res.status(500).json({
       success: false,
-      message: "Login failed"
+      message: "Login failed",
     });
   }
 };
 
-
-
 module.exports = {
-    login,
+  login,
   register,
 };

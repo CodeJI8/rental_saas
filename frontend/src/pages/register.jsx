@@ -9,7 +9,6 @@ const [formData, setFormData] = useState({
   fullName: '',
   email: '',
   password: '',
-  confirmPassword: '',
   orgName: '',
 });
 
@@ -29,36 +28,20 @@ const [formData, setFormData] = useState({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-      console.log("CREATE ACCOUNT CLICKED");
-  console.log("FORM DATA:", formData);
+  try {
 
 
-  if (formData.password.length < 5) {
-    toast.error('Password must be at least 4 characters long');
-    return;
-  }
+ await register(formData);
+  toast.success("Registration Successful");
 
-  if (formData.password !== formData.confirmPassword) {
-    toast.error('Passwords do not match');
-    return;
-  }
-    try {
+  navigate("/login");
 
-      await  register(formData);
-        toast.success("Registration Successful");
+} catch (err) {
+  const message =
+    err.response?.data?.message || "Registration failed";
 
-
-      navigate("/login");
-      
-    } 
-    
-    catch (err) {
-    const message =
-        err.response?.data?.message || "Registration failed";
-
-        toast.error(message);
+  toast.error(message);
 }
-
 
   };
   
