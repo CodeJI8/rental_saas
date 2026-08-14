@@ -12,12 +12,7 @@ export const register = async (data) => {
   return response.data;
 };
 
-
-// export const loginUser  = async (userData) =>{
-
-//     const response  =  await api.post("/login", userData);
-//     console.log(response.data)
-//     return response.data;
-    
-// }
-
+export const login = async (data) => {
+  const response = await api.post("/login", data);
+  return response.data;
+};

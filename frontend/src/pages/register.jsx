@@ -6,7 +6,7 @@ import {toast } from 'react-toastify';
 
 const Register = () => {
 const [formData, setFormData] = useState({
-  fullName: '',
+  name: '',
   email: '',
   password: '',
   orgName: '',
@@ -62,13 +62,13 @@ return (
       <form onSubmit={handleSubmit} className="register-form">
 
         <div className="form-group">
-          <label htmlFor="fullName">Full Name</label>
+          <label htmlFor="name">Full Name</label>
 
           <input
             type="text"
-            id="fullName"
-            name="fullName"
-            value={formData.fullName}
+            id="name"
+            name="name"
+            value={formData.name}
             onChange={handleChange}
             placeholder="John Doe"
             required
