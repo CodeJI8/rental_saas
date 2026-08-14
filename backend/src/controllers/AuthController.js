@@ -1,4 +1,22 @@
+const { response } = require("express");
 const prisma = require("../config/prisma");
+const jwt =require("jsonwebtoken")
+const jwtKey = "token"
+
+
+const generateToken = (user) => {
+  return jwt.sign(
+    {
+      id: user.id,
+      orgId: user.orgId,
+      
+    },
+    jwtKey,
+    {
+      expiresIn: "2h",
+    }
+  );
+};
 
 const register = async (req, res) => {
   try {
@@ -19,6 +37,8 @@ const register = async (req, res) => {
         orgId: organization.id,
       },
     });
+
+      const token = generateToken(user);
 
     res.status(201).json({
       success: true,
@@ -56,6 +76,7 @@ const login = async (req, res) => {
         message: "Invalid email or password",
       });
     }
+     const token = generateToken(user);
 
     res.status(200).json({
       success: true,
