@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { login } from '../api/auth';
 import '../styles/Login.css';
 
 const Login = () => {
@@ -39,19 +40,8 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed.');
-      }
+      const data = await login(formData);
+      console.log("Login response data:", data);
 
       if (data.success) {
         setSuccess(true);
@@ -63,7 +53,9 @@ const Login = () => {
         }, 1500);
       }
     } catch (err) {
-      setError(err.message);
+      // Use err.response.data.message for axios errors
+      const message = err.response?.data?.message || err.message || 'Login failed.';
+      setError(message);
     } finally {
       setLoading(false);
     }
